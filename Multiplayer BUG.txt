@@ -1,0 +1,342 @@
+# Critical Multiplayer and Mobile Diagnostic Update
+
+The multiplayer connection and mobile loading problems are still not confirmed as fixed.
+
+These systems may depend on networking, hosting, firewall rules, server configuration and testing with several devices. Do not guess that the problem is fixed after changing code.
+
+Investigate the actual cause, fix everything that can be fixed inside the project, and create a detailed diagnostic text file for anything that requires manual configuration or external testing.
+
+## 1. External Multiplayer Still May Not Work
+
+Friends connected to a different Wi-Fi network or mobile data may still be unable to join a multiplayer room.
+
+The current multiplayer may only be working through:
+
+* Local network connections.
+* Local IP addresses.
+* The host computer acting as an inaccessible server.
+* A development server available only on the host’s network.
+
+Find out exactly how the existing multiplayer system works.
+
+Check whether it uses:
+
+* Local IP addresses.
+* WebSockets.
+* WebRTC.
+* Peer-to-peer connections.
+* A signalling server.
+* A relay server.
+* A hosted multiplayer backend.
+* LAN-only networking.
+* A room-code service.
+* A local development server.
+
+Do not assume the problem is caused by different Wi-Fi networks until the networking code is inspected.
+
+## 2. Internet Multiplayer Requirements
+
+Room codes should work between players on completely separate internet connections.
+
+A joining player should not need:
+
+* The host’s local IP address.
+* The same Wi-Fi network.
+* Manual router port forwarding.
+* Access to the host’s development environment.
+
+If the game currently uses LAN-only connections, explain what online service is missing.
+
+A proper online multiplayer system may require:
+
+* A publicly reachable server.
+* A WebSocket server.
+* A WebRTC signalling server.
+* A TURN relay for difficult network connections.
+* A deployed multiplayer backend.
+* Secure public URLs using HTTPS/WSS.
+
+Use the simplest reliable solution compatible with the current project.
+
+Do not rewrite working gameplay synchronization unless the transport layer is the real problem.
+
+## 3. Multiplayer Connection Diagnostics
+
+Add detailed connection states and logs.
+
+The game should show:
+
+* `Creating online room`
+* `Connecting to room`
+* `Connected to server`
+* `Waiting for host`
+* `Room not found`
+* `Connection timed out`
+* `Signalling server unavailable`
+* `Relay connection failed`
+* `Host disconnected`
+* `Version mismatch`
+
+Do not leave players on an infinite connecting screen.
+
+Add a reasonable timeout and a `Retry` button.
+
+The multiplayer debug log should record:
+
+* Connection method.
+* Server address without exposing secret credentials.
+* Room code.
+* Connection state changes.
+* Error messages.
+* Timeout reason.
+* Whether a direct or relay connection was used.
+* Game version.
+* Whether the player is host or client.
+
+## 4. Multiplayer Version Check
+
+Players may have different versions of the game.
+
+Add a multiplayer version or build identifier.
+
+When joining:
+
+* Compare the host and client versions.
+* Reject incompatible versions with a clear message.
+* Explain that both players must use the same game version.
+
+Example:
+
+`Unable to join: host and client are using different game versions.`
+
+## 5. Mobile Infinite Loading Bug
+
+Mobile players still cannot open the game because loading continues forever.
+
+Find the exact loading stage where it stops.
+
+Check:
+
+* JavaScript errors.
+* Missing files.
+* File-name capitalization differences.
+* Unsupported browser APIs.
+* WebGL initialization.
+* 3D model loading.
+* Audio autoplay restrictions.
+* Multiplayer initialization.
+* Memory limits.
+* Large map textures.
+* Desktop-only controls.
+* Screen-size assumptions.
+* UI elements with invalid infinite dimensions.
+
+The main menu must not wait for multiplayer, space assets or background audio before opening.
+
+## 6. Mobile Loading Progress
+
+Replace the generic infinite loading screen with real loading stages.
+
+Display stages such as:
+
+* `Loading game data`
+* `Loading world map`
+* `Loading interface`
+* `Initializing graphics`
+* `Loading audio`
+* `Checking multiplayer`
+* `Starting main menu`
+
+If a non-essential feature fails, continue loading the main menu when possible.
+
+For example:
+
+* Failed music should not block startup.
+* Multiplayer server failure should not block single-player.
+* Space models should load only when entering space.
+* Large late-game assets should not load before they are needed.
+
+## 7. Mobile Compatibility Mode
+
+Detect mobile devices and enable a simplified startup mode.
+
+Mobile compatibility mode may:
+
+* Reduce texture resolution.
+* Reduce particle effects.
+* Disable unnecessary shadows.
+* Reduce city lights and ambient vehicles.
+* Delay loading distant solar systems.
+* Delay loading megastructure models.
+* Limit visible units.
+* Use touch-friendly buttons.
+* Avoid mouse-hover-only controls.
+
+Do not remove gameplay features permanently. Load advanced visuals later or use lower-quality versions.
+
+## 8. Touch Controls
+
+Make sure mobile players are not blocked by keyboard and mouse requirements.
+
+Add touch support for important actions such as:
+
+* Selecting countries.
+* Moving the map.
+* Zooming.
+* Selecting units.
+* Moving units.
+* Opening menus.
+* Confirming actions.
+* Returning to the main menu.
+
+Keyboard shortcuts may remain available on PC, but mobile startup and menus must not require them.
+
+## 9. Create a Diagnostic Text File
+
+Create a text file in the project called:
+
+`MULTIPLAYER_AND_MOBILE_DIAGNOSTIC.txt`
+
+This file must be understandable to a person who is not an expert programmer.
+
+Include these sections:
+
+### Current Multiplayer Architecture
+
+Explain:
+
+* What networking method the game currently uses.
+* Whether it is LAN-only or internet-capable.
+* Which files contain the multiplayer code.
+* Whether a public server or relay is required.
+
+### Actual Problems Found
+
+List every confirmed problem.
+
+Examples:
+
+* Localhost address is used.
+* Host local IP is sent to clients.
+* No signalling server exists.
+* Server is not publicly deployed.
+* TURN relay is missing.
+* Mobile browser crashes during WebGL initialization.
+* A specific asset never finishes loading.
+
+Do not list guesses as confirmed problems.
+
+Clearly separate:
+
+* Confirmed problems.
+* Possible problems requiring testing.
+* External configuration requirements.
+
+### Changes Made
+
+Explain which files were changed and what each change fixes.
+
+### Manual Setup Required
+
+Provide exact instructions for anything that cannot be completed only by editing game code.
+
+This may include:
+
+* Deploying the multiplayer server.
+* Setting environment variables.
+* Creating a WebSocket or signalling-server URL.
+* Configuring a TURN server.
+* Opening firewall access.
+* Adding allowed domains.
+* Enabling HTTPS.
+* Updating the game’s server address.
+
+Never place passwords or private keys inside the text file.
+
+### How to Test Multiplayer
+
+Provide step-by-step tests for:
+
+1. Two computers on the same Wi-Fi.
+2. Two computers on different Wi-Fi networks.
+3. One computer and one phone using mobile data.
+4. Host disconnection and reconnection.
+5. Incorrect room code.
+6. Different game versions.
+7. Server unavailable.
+
+Explain what the expected result is for each test.
+
+### How to Test Mobile
+
+Provide steps for:
+
+* Android Chrome.
+* iPhone Safari.
+* Wi-Fi.
+* Mobile data.
+* Clearing browser cache.
+* Opening browser developer logs where possible.
+* Identifying the last successful loading stage.
+
+### Remaining Limitations
+
+Clearly explain anything that still does not work and why.
+
+Do not claim full online multiplayer works unless it has actually been tested between different networks.
+
+## 10. Optional Debug Download
+
+When running a development or testing build, add a button:
+
+`Export Debug Report`
+
+It should create or download a text report containing:
+
+* Game version.
+* Device type.
+* Browser.
+* Current loading stage.
+* Multiplayer connection state.
+* Recent non-sensitive errors.
+* Graphics initialization result.
+* Server connection result.
+
+Do not include passwords, private messages, access tokens or secret server credentials.
+
+This would allow friends to send the report back when joining fails.
+
+## 11. Do Not Hide the Real Problem
+
+If online multiplayer requires a backend that does not currently exist, state this clearly in the diagnostic file.
+
+Do not attempt to imitate online multiplayer with a room code that only contains a local IP address.
+
+If a public server cannot be deployed automatically, complete the server code and provide exact deployment instructions.
+
+If testing requires two real devices, explain what needs to be tested rather than claiming success from a single-device simulation.
+
+## 12. Required Tests
+
+Test everything that can be tested locally:
+
+1. Confirm the game identifies whether multiplayer is LAN-only or internet-capable.
+2. Confirm connection attempts time out instead of loading forever.
+3. Confirm incorrect room codes display an error.
+4. Confirm version mismatches are detected.
+5. Confirm multiplayer failure does not block single-player.
+6. Confirm the mobile main menu can load without space assets.
+7. Confirm failed audio does not block loading.
+8. Confirm touch controls work in the main menu.
+9. Confirm the diagnostic text file is created.
+10. Confirm the file explains any required server setup.
+11. Confirm debug logs do not contain secrets.
+12. Provide a checklist for testing with friends on different networks.
+
+The most important result is not another unverified multiplayer patch. The project must clearly explain:
+
+* How multiplayer currently connects.
+* Why external players cannot join.
+* What was fixed.
+* What still requires manual setup.
+* How the owner can test whether it actually works.

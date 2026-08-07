@@ -1,0 +1,68 @@
+========================================
+ HOW TO PLAY MULTIPLAYER (simple guide)
+========================================
+
+HOW DO MY FRIENDS GET THE GAME?
+-------------------------------
+The game is just files — there is no install. Your friends need
+their own copy of the game folder on their PC.
+
+1. Make a ZIP of the game folder. You only NEED these 10 files:
+      game.html
+      mapdata.js
+      data.js
+      engine.js
+      sound.js
+      war.js
+      space.js
+      net.js
+      ui.js
+      RLmap.png
+   (Easiest: just zip the whole folder, extra files don't hurt.)
+
+2. Send the ZIP to your friends (Discord, WhatsApp, Google Drive,
+   email... anything).
+
+3. Friend UNZIPS it into a folder (important — don't run it from
+   inside the zip!) and double-clicks game.html.
+   It opens in their browser (Chrome/Edge/Firefox). That's it,
+   they now have the game.
+
+HOW TO CONNECT
+--------------
+1. Everyone must have INTERNET on (the connection goes through the
+   internet, you do NOT need to be in the same house/wifi).
+2. One player is the HOST. Host clicks "Host" in the game and gets
+   a code.
+3. Host sends the code to the friends (Discord etc.).
+4. Friends click "Join", type the code, and they're in.
+5. Everyone picks a country — one country per player.
+
+IMPORTANT STUFF TO KNOW
+-----------------------
+* EVERYONE NEEDS THE SAME VERSION. If you update the game, send
+  your friends the new ZIP, or weird bugs / desyncs can happen.
+
+* THE HOST IS THE SERVER. The whole game runs on the host's PC.
+  - If the host closes the tab or their PC dies, the game ends
+    for everyone.
+  - Host should have the best PC / internet of the group.
+
+* Clients (joiners) just see what the host sends and send their
+  orders to the host. So if a friend lags, only they lag — the
+  host's game keeps running.
+
+* If joining fails:
+  - Check the code was typed EXACTLY right.
+  - Both players refresh the page (F5) and try again — the free
+    connection service sometimes hiccups.
+  - Make sure no firewall/VPN is blocking the browser.
+  - School/work networks sometimes block this kind of connection —
+    try from home or a phone hotspot.
+
+* Don't refresh (F5) mid-game — you'll disconnect from the match.
+
+* Keep all the game files together in ONE folder. If you move
+  game.html out alone, it breaks ("Could not load RLmap.png").
+
+Have fun conquering your friends!

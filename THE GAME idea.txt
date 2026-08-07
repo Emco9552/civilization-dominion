@@ -1,0 +1,642 @@
+# Create a Map-Based Civilization Domination Game
+
+Use these uploaded files:
+
+* `RLmap.png` — the main world and biome map.
+* `CoolBorders.PNG` — reference for country borders and visual effects.
+* `Border.png` — clearer reference for country borders.
+* `Human Borders.png` — shows the human country outlined in red.
+
+Use `RLmap.png` as the main visible map.
+
+Country borders must follow the uploaded references. Do not invent countries, remove small countries or divide countries based on biome changes.
+
+Biomes and political borders are separate.
+
+# Main Goal
+
+Create a civilization strategy and domination game.
+
+The player should be able to:
+
+* Select a country and species.
+* Build and manage the country.
+* Research technologies.
+* Recruit armies.
+* Use diplomacy and espionage.
+* Talk to leaders and citizens.
+* Conquer territory.
+* Win through domination or another victory condition.
+
+Keep the game manageable. Each feature should work, but it does not need to be extremely deep.
+
+# Game Modes
+
+## Standard Mode
+
+Standard Mode should have faster progress, simpler management and easier wars.
+
+## Realistic Mode
+
+Realistic Mode should use the same systems but make them harder.
+
+It should include slower progress, stronger war consequences, more expensive decisions and more importance placed on morale, stability and conversations.
+
+# Player Leadership
+
+The player becomes the leader of the selected country.
+
+The leader title depends on the government, such as:
+
+* King.
+* President.
+* Dictator.
+* Emperor.
+
+Governments should provide small advantages and disadvantages.
+
+The player may change the government later, but it should cost resources and temporarily reduce stability.
+
+# Interactive World Map
+
+Recreate every country as a clickable region over `RLmap.png`.
+
+Each country should:
+
+* Highlight when hovered over.
+* Be selectable.
+* Display basic information.
+* Use a transparent ownership colour.
+* Change ownership after conquest.
+
+Keep the biomes visible underneath the ownership colours.
+
+Follow the border references carefully, especially on the large top-right continent.
+
+# Regions
+
+Countries may contain a small number of internal regions.
+
+Regions can contain:
+
+* Cities.
+* Resources.
+* Buildings.
+* Armies.
+
+Regions can be captured during wars.
+
+Do not create too many regions.
+
+# Countries and Species
+
+Every country should have its own fictional species.
+
+Each species needs:
+
+* Name.
+* Appearance.
+* Language.
+* Culture.
+* Government.
+* Technology style.
+* Strengths.
+* Weaknesses.
+* Special ability.
+* Short history.
+
+When selecting a country, show this information with a `Play` button.
+
+Descriptions can be short.
+
+# Humanity
+
+Humans control the large country marked in `Human Borders.png` on the top-right continent.
+
+Humans should be one of the strongest playable civilizations.
+
+Human strengths:
+
+* Best intelligence.
+* Fast research.
+* Strong education and engineering.
+* Good strategy and diplomacy.
+* High adaptability.
+
+Human weaknesses:
+
+* Low physical strength.
+* Low natural durability.
+* Weak early melee units.
+* Dependence on equipment.
+
+Humans should become very powerful through technology.
+
+They may reach advanced technology while other countries remain in older eras.
+
+# Species Statistics
+
+Use these statistics:
+
+* Intelligence.
+* Strength.
+* Durability.
+* Agility.
+* Population Growth.
+* Productivity.
+* Diplomacy.
+* Morale.
+* Adaptability.
+
+Every statistic should have one clear gameplay effect.
+
+For example:
+
+* Intelligence increases research.
+* Strength improves melee units.
+* Productivity improves resources and construction.
+* Diplomacy improves agreements.
+* Morale affects armies and stability.
+* Adaptability reduces biome penalties.
+
+# Technology System
+
+Technology should not depend on calendar years.
+
+Civilizations only advance by researching technologies.
+
+Different civilizations may progress at very different speeds.
+
+A technologically advanced country should have a major advantage over a less advanced one.
+
+# Technology Eras
+
+Use these eras:
+
+1. Primitive Era.
+2. Ancient Era.
+3. Medieval Era.
+4. Industrial Era.
+5. Modern Era.
+6. Information Era.
+7. Futuristic Era.
+8. Interplanetary Era.
+
+# Unlocking Eras
+
+The next era unlocks after researching approximately 75% of the technologies in the current era.
+
+Example:
+
+* The Medieval Era has 12 technologies.
+* The player researches 9.
+* The Industrial Era unlocks.
+
+Old unfinished technologies should remain available.
+
+Show era progress clearly:
+
+`Medieval Era: 67%`
+
+At 75%:
+
+`Industrial Era unlocked`
+
+# Technology Tree
+
+Create a visual technology tree.
+
+Use around 8–12 technologies in each era.
+
+Main categories:
+
+* Military.
+* Economy.
+* Education.
+* Infrastructure.
+* Medicine.
+* Government.
+* Energy.
+* Space.
+
+Each technology should show:
+
+* Cost.
+* Requirements.
+* Effect.
+* Era.
+
+Technologies may unlock units, buildings or bonuses.
+
+# Research Points
+
+Technologies require research points.
+
+Research points should mainly come from:
+
+* Species intelligence.
+* Population.
+* Schools.
+* Universities.
+* Laboratories.
+
+Humans should generate research points faster than other species.
+
+The player researches one technology at a time.
+
+# Technology Sharing
+
+Countries may gain technology through:
+
+* Trade.
+* Alliances.
+* Espionage.
+* Capturing advanced regions.
+
+Technology should not spread automatically.
+
+# Resources
+
+Use a small resource system:
+
+* Food.
+* Materials.
+* Energy.
+* Money.
+* Research Points.
+* Population.
+
+Biomes should affect resource production.
+
+For example, fertile areas produce more food and mountains produce more materials.
+
+# Cities and Buildings
+
+Countries should contain several cities.
+
+Cities produce resources and contain buildings.
+
+Main buildings:
+
+* Houses.
+* Farms.
+* Mines.
+* Factories.
+* Schools.
+* Universities.
+* Laboratories.
+* Hospitals.
+* Military bases.
+* Fortifications.
+* Power plants.
+
+Every building should have a clear effect.
+
+Do not create a complicated city-building simulator.
+
+# Economy
+
+The economy should be based mainly on:
+
+* Taxes.
+* Resource production.
+* Trade.
+* Building and military costs.
+
+In Realistic Mode, shortages and excessive spending should have stronger consequences.
+
+# Armies
+
+The player should be able to recruit armies.
+
+Units depend on the current technology era.
+
+Examples:
+
+* Medieval armies use swords, bows and trebuchets.
+* Industrial armies use rifles and artillery.
+* Modern armies use tanks and aircraft.
+* Futuristic armies use robots and energy weapons.
+
+Keep unit statistics simple:
+
+* Attack.
+* Defence.
+* Health.
+* Speed.
+* Morale.
+
+# Warfare
+
+The player can attack neighbouring regions.
+
+Battle results should depend on:
+
+* Army size.
+* Technology.
+* Species statistics.
+* Morale.
+* Terrain.
+* Fortifications.
+
+Advanced technology should usually defeat older technology, but numbers and defence should still matter.
+
+# Conquest and Occupation
+
+Regions can change ownership during war.
+
+A country is defeated after losing most of its regions and its capital.
+
+After victory, the player may:
+
+* Annex the country.
+* Create a subject country.
+* Demand territory.
+* Make peace.
+
+Conquered regions should have reduced morale for some time.
+
+Realistic Mode should make occupation harder.
+
+# Diplomacy
+
+Include these diplomatic actions:
+
+* Improve relations.
+* Trade.
+* Alliance.
+* Military access.
+* Research agreement.
+* Declare war.
+* Make peace.
+* Demand territory.
+* Create a subject country.
+
+AI countries should react based on their personality, strength and relationship with the player.
+
+# Espionage
+
+Add a simple espionage system.
+
+Possible actions:
+
+* Steal technology.
+* Reveal armies.
+* Sabotage production.
+* Support unrest.
+
+Spy actions should cost money and have a chance to fail.
+
+Failure may damage diplomatic relations.
+
+# Artificial Intelligence
+
+Every non-player country should be controlled by AI.
+
+The AI should be able to:
+
+* Build.
+* Research.
+* Recruit armies.
+* Defend itself.
+* Attack enemies.
+* Trade.
+* Form alliances.
+* Use basic espionage.
+
+Countries may have simple personalities such as aggressive, peaceful, scientific or defensive.
+
+# AI Conversations
+
+Realistic Mode should include a conversation system.
+
+The player can talk to:
+
+* Their own city leader.
+* A random citizen.
+* A foreign leader.
+
+The player should be able to type messages or choose suggested questions.
+
+Characters should respond based on simple game information such as:
+
+* Current wars.
+* Resources.
+* Morale.
+* Relationships.
+* Recent decisions.
+
+Foreign leaders can discuss peace, trade, alliances, threats and territory.
+
+Citizens can discuss shortages, safety, war and public morale.
+
+The conversation system does not need complex human-level memory. It only needs to react to important current information.
+
+# Promises
+
+Important promises made during conversations should be stored.
+
+Examples:
+
+* Promise peace.
+* Promise resources.
+* Promise military support.
+* Promise to return territory.
+
+Breaking a promise should reduce trust and relations.
+
+# Government and Country Customization
+
+The player may change:
+
+* Country name.
+* Flag.
+* Government.
+* Official language.
+* Capital.
+* Leader title.
+
+Every change should cost something.
+
+Possible costs:
+
+* Money.
+* Morale.
+* Stability.
+* Political influence.
+
+Small visual changes should be cheap.
+
+Changing the government or language should be more expensive.
+
+# Permanent Characteristics
+
+The player cannot directly change:
+
+* Species.
+* Species appearance.
+* Natural strengths.
+* Natural weaknesses.
+* Special abilities.
+* Base statistics.
+* Original geography.
+* Biomes.
+* Starting history.
+
+Technology may reduce weaknesses without changing the original species.
+
+For example, humans remain naturally weak but can use powered armour.
+
+# Laws and Policies
+
+Add a simple policy screen.
+
+Possible policies:
+
+* Tax level.
+* Education spending.
+* Military spending.
+* Healthcare spending.
+* Trade policy.
+* Conscription.
+
+Policies should provide clear bonuses and penalties.
+
+Do not create a complex parliament system.
+
+# Population
+
+Track the country’s total population and basic morale.
+
+Population affects:
+
+* Resource production.
+* Taxes.
+* Research.
+* Army recruitment.
+
+Low food, high taxes and long wars should reduce morale.
+
+# Events
+
+Add simple random events.
+
+Examples:
+
+* Resource discovery.
+* Food shortage.
+* Scientific breakthrough.
+* Protest.
+* Natural disaster.
+* Diplomatic offer.
+
+Each event should have two or three choices with clear effects.
+
+# Victory Conditions
+
+Possible victories:
+
+* Conquer the world.
+* Control most countries.
+* Become the most technologically advanced.
+* Create a global alliance.
+* Reach the Interplanetary Era first.
+
+# User Interface
+
+Use a clean futuristic style.
+
+Main screens:
+
+* Main menu.
+* Mode selection.
+* Country selection.
+* World map.
+* Country information.
+* Technology tree.
+* Resources and buildings.
+* Military.
+* Diplomacy.
+* Espionage.
+* Government.
+* Conversations.
+
+When hovering over a country, show:
+
+* Country name.
+* Species.
+* Government.
+* Technology era.
+* Military power.
+* Relationship.
+
+# Visual Style
+
+Keep the original biome appearance from `RLmap.png`.
+
+Country ownership should use:
+
+* Transparent colours.
+* Clear borders.
+* Hover highlighting.
+* Selected-country effects.
+
+Do not cover the biome map with solid country colours.
+
+Use `CoolBorders.PNG` mainly as a visual reference.
+
+# Important Border Rules
+
+Follow the uploaded borders exactly.
+
+Do not:
+
+* Invent new borders.
+* Remove small countries.
+* Split countries because their biomes change.
+* Make every island a separate country.
+
+The human country must follow `Human Borders.png`.
+
+# Development Order
+
+## Stage 1 — Map
+
+* Display the map.
+* Create the clickable countries.
+* Add country selection.
+* Add species information.
+* Make humanity playable.
+
+## Stage 2 — Country Gameplay
+
+* Add resources.
+* Add cities and buildings.
+* Add population.
+* Add research points.
+* Add the technology tree.
+* Add the 75% era system.
+
+## Stage 3 — Strategy
+
+* Add armies and combat.
+* Add conquest.
+* Add AI countries.
+* Add diplomacy.
+* Add espionage.
+
+## Stage 4 — Extra Systems
+
+* Add Standard and Realistic Mode.
+* Add governments and policies.
+* Add country customization.
+* Add conversations and promises.
+* Add events and victory conditions.
+
+# Important Development Rule
+
+Keep all these features in the project, but begin with simple versions.
+
+Do not turn each feature into a separate large simulator.
+
+First make the core game playable. Improve the depth only after the basic systems work.

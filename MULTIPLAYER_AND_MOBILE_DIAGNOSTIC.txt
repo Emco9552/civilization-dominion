@@ -1,0 +1,386 @@
+================================================================
+ CIVILIZATION: DOMINION
+ MULTIPLAYER & MOBILE DIAGNOSTIC  —  written 2026-08-07
+ Game version this file describes: v1.9.0 (2026-08-07)
+================================================================
+
+This file explains, in plain language:
+  1. How multiplayer actually connects
+  2. Which problems were CONFIRMED in the code (facts, not guesses)
+  3. Which problems are POSSIBLE but need real-device testing
+  4. What was changed in this update
+  5. What still needs to be done by hand (very little)
+  6. Step-by-step tests to run with friends
+  7. What still does not work, honestly
+
+
+================================================================
+ 1. CURRENT MULTIPLAYER ARCHITECTURE (how a game connects)
+================================================================
+
+The game is INTERNET-CAPABLE, not LAN-only. There is no local server,
+no localhost address, and no IP address is ever typed or shared.
+
+How it works, step by step:
+
+  * All multiplayer code lives in ONE file: net.js.
+    (war.js calls into it 5x/second to stream updates; that's all.)
+
+  * The game uses WebRTC "data channels" — a browser-to-browser
+    connection — through a library called PeerJS (version 1.5.4,
+    downloaded automatically from a CDN when you click Host/Join).
+
+  * SIGNALLING (how two browsers find each other): PeerJS's free
+    public cloud server (0.peerjs.com). The host registers the name
+    "civdom-<roomcode>" there; a joiner asks that server for the
+    same name. This is why a 5-letter room code is enough — no IP
+    addresses, no port forwarding, no same-Wi-Fi requirement.
+
+  * FIREWALL TRAVERSAL: the connection config lists public STUN
+    servers (Google, Cloudflare) and TWO sets of free TURN relay
+    servers (PeerJS's own, and OpenRelay) including relays on ports
+    80/443 over TCP — the ports that even strict networks allow.
+    If a direct connection is impossible, the game data is relayed.
+
+  * After connecting, the HOST'S PC is the game server. The host
+    runs the only real simulation and broadcasts the world state
+    every 3 seconds (plus small updates 5x/second). If the host
+    closes the tab, the game ends for everyone. That is by design.
+
+  * The lobby/status screen shows the true link type once connected:
+    "Local/LAN connection", "Online (direct)" or "Online (relayed)" —
+    it reads the browser's live connection statistics, it is not a guess.
+
+So: NO public server of your own is required. The pieces that ARE
+external (PeerJS cloud signalling, TURN relays) are free public
+services already wired in.
+
+================================================================
+ 2. ACTUAL PROBLEMS FOUND — CONFIRMED (verified in the code)
+================================================================
+
+Multiplayer:
+
+  C1. NO VERSION CHECK EXISTED. The join handshake carried no version
+      information at all. Two friends with different copies of the
+      game connected "successfully" and then desynced or crashed in
+      weird ways. This alone can explain most "multiplayer is broken"
+      reports that happen AFTER a successful join.        [FIXED]
+
+  C2. Wrong room code showed "Room not found", but a leftover 20-second
+      timer then REPLACED that message with a wrong "Connection timed
+      out" and left half-dead connection objects behind; clicking Join
+      again during that window could start two connections at once.
+                                                          [FIXED]
+
+  C3. A joiner could hang FOREVER on "Connected! Waiting for the
+      lobby…" — there was no time limit between reaching the host and
+      the host's reply.                                    [FIXED]
+
+  C4. If the PeerJS library download stalled (rather than failing),
+      the screen said "Connecting…" forever — the 15s timer only
+      started AFTER the library loaded.                    [FIXED]
+
+  C5. A FULL room, and a rejoin attempt whose name matched no seat,
+      were silently disconnected by the host — the joiner saw the
+      WRONG message "Host disconnected — the room is gone."  [FIXED]
+
+  C6. No heartbeat existed. If a connection died without the browser
+      noticing (common with Wi-Fi drops / sleeping laptops), a client
+      froze on the last world state FOREVER with no message, and the
+      host kept a dead seat forever.                       [FIXED]
+
+  C7. In-game connection errors on the host were written to a status
+      line that only exists on the (hidden) multiplayer screen — the
+      host never saw them.                                 [FIXED]
+
+  C8. There was zero connection logging — nothing to send back when
+      "it doesn't work at my friend's house".              [FIXED]
+
+Mobile / loading:
+
+  C9. THE BIG ONE — the "infinite loading on phones" bug: the loading
+      screen's error handler and its 25-second watchdog were created
+      INSIDE ui.js, the LAST script file to load. If ANY game file
+      failed to load or crashed before that point, the spinner span
+      forever with no message — exactly what phones reported.
+
+      The most likely real-world trigger: opening game.html from
+      INSIDE the ZIP, from a chat app's preview, or with the other
+      files missing — the .js files then fail to load, and (old
+      behaviour) nothing ever told you. On a phone this is very easy
+      to do by accident.                                   [FIXED]
+
+  C10. A parse error in a MIDDLE file (engine.js etc.) produced a
+      normal-looking menu with dead buttons and no error anywhere.
+                                                          [FIXED]
+
+  C11. The mobile-device detection had a bug: the game's own variable
+      named "screen" hid the browser's window.screen, so the
+      small-screen check always failed. (Phone detection still worked
+      via user-agent in most cases.)                       [FIXED]
+
+  C12. The space view had NO touch controls at all — on a phone you
+      could not rotate, pan or zoom the space camera. (Menus, map,
+      armies were already touch-friendly.)                 [FIXED]
+
+Confirmed NON-problems (checked, working as designed):
+
+  * The menu does NOT wait for multiplayer, space assets or audio.
+    PeerJS loads only when you click Host/Join; space graphics build
+    on first entering space; the AudioContext is created only after
+    your first tap/click (so autoplay restrictions cannot block
+    loading; a failed sound system is caught and ignored).
+  * Every canvas is 2D (no WebGL to fail) and far below iOS canvas
+    size limits (~1.6 megapixels vs ~16 allowed).
+  * The whole menu flow needs zero keyboard/right-click — taps work.
+  * The code avoids all JS syntax newer than 2016; any phone browser
+    from ~2017 onward can parse every file.
+
+================================================================
+ 3. POSSIBLE PROBLEMS — require real-device testing
+================================================================
+
+  P1. The free public services can have bad days: PeerJS's cloud
+      signalling server and the OpenRelay TURN relays are shared,
+      unpaid infrastructure. If they are down or rate-limited, rooms
+      fail no matter what the game does. (The game now SAYS this
+      clearly instead of spinning.) Refreshing and retrying later
+      genuinely helps.
+
+  P2. Networks that block ALL WebRTC (some school/corporate networks,
+      some VPNs) cannot be traversed even by TURN over TCP/443. The
+      timeout message now names this case. Workaround: phone hotspot.
+
+  P3. Very old phones (before ~2017) cannot parse the game's JS at
+      all. They now get a proper error screen instead of a spinner,
+      but they still cannot play.
+
+  P4. A phone with very little free memory could still fail while
+      building the world (the game needs roughly 60-80 MB). This now
+      shows "World build failed: …" instead of hanging, but the only
+      fix is closing other tabs/apps.
+
+  P5. iOS Safari + file:// — iPhones cannot easily open a local HTML
+      file with its sibling files at all (the Files app preview loads
+      only the HTML). Android Chrome can, via "Open with". If a phone
+      player sees "Could not load <file>.js", this is that case —
+      see section 5 for the recommended way to give phones the game.
+
+================================================================
+ 4. CHANGES MADE IN THIS UPDATE (file by file)
+================================================================
+
+  data.js
+    * New GAME_VERSION constant — the single build identifier
+      ("1.9.0 (2026-08-07)"). Bump it with every shipped update.
+
+  net.js  (all multiplayer fixes)
+    * Version handshake (§C1): the client's hello carries its version;
+      the host refuses a mismatch with an exact message on BOTH ends
+      ("Version mismatch — … host: X, you: Y"), and the lobby/start
+      messages carry the host's version so a NEWER client also detects
+      an OLDER host. Hosts/clients from before this update are treated
+      as "an older build" and refused.
+    * Named rejections (§C5): full room → "Room is full…", failed
+      rejoin → "Unable to rejoin — no disconnected seat matches your
+      name…". No more wrong "Host disconnected".
+    * Timeouts everywhere (§C2, C3, C4): library download 12s, server
+      connect 15s, room connect 20s, host's first reply 12s, game
+      start 30s. Every failure states its reason and shows a ⟳ Retry
+      button that cleanly aborts the old attempt first (no doubled
+      connections).
+    * Better timeout text: if the server was reachable but no link
+      formed, the message says a relay connection could not be
+      established and suggests another network / hotspot.
+    * Heartbeat & stall detection (§C6): clients ping the host every
+      5 s (answered outside the simulation loop). No world updates for
+      15 s but pings still answered → "⏸ The host's game is paused —
+      they likely minimised the game…" (the simulation really does
+      pause in background tabs). Nothing at all for 20 s → connection
+      problem warning; recovery is announced too. The host is warned
+      when a seated player has been silent for 2 minutes. Nobody is
+      ever auto-kicked by these warnings.
+    * In-game errors now ALSO appear as toasts (§C7), not only in the
+      hidden multiplayer screen.
+    * Connection debug log (§C8): every state change, status message,
+      error, probed link type and refusal is recorded (max 250 lines,
+      no credentials) — this feeds the debug report.
+    * 📋 Export Debug Report button (multiplayer screen): builds a
+      text report (version, device, browser, loading stage, connection
+      state & log, recent errors — no secrets) shown in a copyable box
+      with a "Download civdom-debug.txt" button.
+    * Half-received big messages are dropped after 30 s instead of
+      leaking memory forever.
+
+  game.html
+    * Early boot guard (§C9, C10): a small plain-JS script now runs
+      BEFORE any game file. It catches files that fail to load ("Could
+      not load war.js — … extract the WHOLE zip first"), catches
+      crashes in every file, shows real per-file loading stages
+      ("Loading game data… / military systems… / interface…"), and
+      carries its own 30-second last-resort watchdog with a Retry
+      button. An eternal blank spinner is no longer possible.
+    * Multiplayer screen: ⟳ Retry button, 📋 Export Debug Report
+      button, and the game version shown in the subtitle (so friends
+      can compare versions at a glance). The "How it works" card
+      explains the same-version rule.
+    * (Cosmetic, separate request: 10/10 stats get a static gradient;
+      Humanity's 11/10 keeps its animated glow and gains a subtle
+      external spark aura.)
+
+  ui.js
+    * The loading overlay now hides only AFTER the menu is fully
+      wired (§C10) — a broken menu becomes a visible error.
+    * loadStep/loadFail feed the boot stage + errors to the debug
+      report; the boot completion cancels the early watchdog.
+    * window.screen shadowing fixed in the mobile check (§C11).
+    * Main-menu subtitle shows the game version.
+
+  space.js
+    * Touch camera for the space view (§C12): one finger orbits,
+      two-finger pinch zooms, two-finger drag pans; taps still select.
+      Same recipe as the planet map, so nothing else changed.
+
+  test17.html / test17.js
+    * New automated battery covering the version handshake, rejection
+      messages, timeout/retry plumbing, stall detection, chunk expiry,
+      boot guard, debug report (including a no-credentials check) and
+      the 10/10 / 11/10 stat styling.
+
+================================================================
+ 5. MANUAL SETUP REQUIRED
+================================================================
+
+  NOTHING has to be deployed, configured or paid for. The game uses
+  free public infrastructure that is already wired in. No environment
+  variables, no firewall rules on your side, no HTTPS certificate.
+
+  The one thing to keep doing BY HAND, every time you change the game:
+
+    -> Send friends the WHOLE updated folder as a fresh ZIP, and tell
+       them to delete the old one. The game now enforces this: mixed
+       versions are refused with a clear message instead of desyncing.
+       The current version is printed on the main menu and the
+       multiplayer screen.
+
+  RECOMMENDED (optional) — a better way to give phones the game:
+  hosting the folder on any free static web host (for example GitHub
+  Pages: create a repository, upload the game files, enable Pages)
+  gives everyone — especially iPhones, which cannot open local file
+  sets — a normal https link to play from. No game code changes are
+  needed for this; the multiplayer works identically from a URL.
+  This is optional; PCs can keep using the ZIP.
+
+================================================================
+ 6. HOW TO TEST MULTIPLAYER (step by step)
+================================================================
+
+  Before every test: both computers open game.html, check the MAIN
+  MENU shows the SAME version number.
+
+  T1. Two computers, same Wi-Fi
+      Host: Multiplayer → name → Create room → note the code.
+      Joiner: Multiplayer → name → type code → Join room.
+      EXPECT: joiner lands in the lobby within ~5 s; the status line
+      eventually shows "Local/LAN connection" or "Online (direct)".
+
+  T2. Two computers, different networks (the real test)
+      Same steps; the second PC on another home's Wi-Fi, or a laptop
+      tethered to a phone hotspot.
+      EXPECT: same as T1. "Online (relayed)" is fine — it means the
+      TURN relay saved a difficult network. If it fails: both sides
+      press 📋 Export Debug Report and compare the last log lines.
+
+  T3. One computer + one phone on MOBILE DATA
+      Phone gets the game per section 5 (hosted link recommended).
+      EXPECT: phone loads (watch the new loading stages), joins with
+      the code, usually "Online (relayed)".
+
+  T4. Host disconnection & reconnection
+      Start a 2-player game. CLIENT refreshes (F5), then rejoins with
+      the SAME name and code.
+      EXPECT: while the client is away the host sees "caretaker AI"
+      messages; on rejoin the client gets their nation back.
+      Then HOST closes their tab.
+      EXPECT: client gets "Host disconnected" with a button back to
+      the menu — the session is over (host = server, by design).
+
+  T5. Wrong room code
+      Join with a code that doesn't exist (e.g. ZZZZZ).
+      EXPECT: "Room not found — no room ZZZZZ is open right now…"
+      within a few seconds, a ⟳ Retry button, and the message STAYS
+      (it is no longer replaced by a fake timeout 20 s later).
+
+  T6. Different game versions
+      Change GAME_VERSION at the top of data.js on ONE machine (e.g.
+      to "test-old"), reload, then try to join in either direction.
+      EXPECT: "Version mismatch — … host: X, you: Y" on the joiner,
+      a toast on the host naming the joiner. Restore the value after!
+
+  T7. Server unavailable
+      Disconnect the PC from the internet, click Create room.
+      EXPECT: "Signalling server unavailable…" (or the library-load
+      message) within ~15 s + Retry. Never an endless "Connecting…".
+
+  T8. Host minimises the game (new detector)
+      In a running 2-player game the host switches to another tab for
+      ~30 s. EXPECT: client sees "⏸ The host's game is paused…", then
+      "Connection to the host restored" when the host returns.
+
+================================================================
+ 7. HOW TO TEST MOBILE
+================================================================
+
+  Android (Chrome):
+    1. Get the game onto the phone per section 5 (hosted link is the
+       reliable way; "all files in one folder + Open with Chrome"
+       also works from local storage).
+    2. Open it. You should see REAL stages: "Loading game data…",
+       "…military systems…", "…interface…", "Loading map…",
+       "Starting main menu…" — then the menu.
+    3. If it stops, the screen now TELLS YOU the stage and the error.
+       That message (or 📋 Export Debug Report from the multiplayer
+       screen, if you get that far) is what to send back.
+    4. Test Wi-Fi first, then the same page on mobile data.
+    5. If the page behaved oddly before, clear the browser cache
+       (Settings → Privacy → Clear browsing data → Cached files) and
+       reload — old half-cached files are a classic cause.
+    6. Developer logs, if ever needed: connect the phone by USB to a
+       PC, open chrome://inspect on the PC, tap the page → Console.
+
+  iPhone (Safari):
+    1. Use a hosted https link (section 5) — iOS cannot open a local
+       multi-file game from the Files app.
+    2. Same expectations as Android. To see logs: Settings → Safari →
+       Advanced → Web Inspector, then inspect from a Mac's Safari.
+
+  What to report from any failure: the LAST loading stage shown, the
+  exact error text, phone model, browser, and Wi-Fi vs mobile data.
+
+================================================================
+ 8. REMAINING LIMITATIONS (the honest list)
+================================================================
+
+  * Cross-network multiplayer STILL DEPENDS on free public services
+    (PeerJS cloud + TURN relays). They are usually fine, but the game
+    cannot guarantee them. It now fails loudly and retryably instead
+    of silently. If they ever become a recurring problem, the fix is
+    renting/self-hosting a PeerJS server + TURN — that WOULD be a
+    manual deployment; it is deliberately not part of this update.
+  * Networks that block WebRTC entirely cannot be crossed; the game
+    says so and suggests a hotspot.
+  * The host's tab must stay in the foreground for the world to
+    advance (the simulation runs in the browser's animation loop).
+    Clients are now TOLD when the host paused instead of freezing
+    silently — but the pause itself is by design.
+  * Real cross-network and real-phone runs (T2, T3 above) could not
+    be executed from this single development PC. Everything testable
+    locally is covered by automated tests (test17) and headless runs;
+    the two-device tests need you and a friend — that is exactly what
+    section 6 is for.
+  * Phones older than ~2017 get a clear error, not a game.
+
+================================================================
+ END OF DIAGNOSTIC
+================================================================

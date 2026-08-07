@@ -1,0 +1,64 @@
+# Tiny Visual Update — Special Effect for 10/10 Stats
+
+On the country and species-selection screen, improve how maximum `10/10` statistics are displayed.
+
+Currently, a `10/10` statistic uses only a simple green colour. Replace this with a more attractive **static gradient**.
+
+## 10/10 Stat Appearance
+
+Any species with a statistic of exactly `10/10` should receive:
+
+* A clean static gradient on the stat bar.
+* A matching gradient on the `10/10` value.
+* A slightly brighter border or highlight.
+* No animation.
+* No pulsing.
+* No strong glow.
+
+The gradient must remain still and should look clearly better than an ordinary stat value.
+
+Apply this to every type of statistic and every species, not only Intelligence.
+
+## Keep 11/10 More Special
+
+Humanity’s unique `11/10 Intelligence` must remain visually superior.
+
+The `11/10` effect should continue using:
+
+* An animated gradient.
+* A stronger glow.
+* A brighter stat bar.
+* The existing beyond-maximum presentation.
+* The original special styling (unchanged core behaviour).
+
+### New Enhancement for 11/10
+
+To make `11/10` feel even more extraordinary, add a subtle **external aura effect** around the stat bar:
+
+* Small visual elements (light particles, shimmer fragments, or energy sparks) should appear **outside the bar itself**.
+* These effects should gently orbit, drift, or flicker around the bar’s edges.
+* The effect should not interfere with readability of the stat value.
+* It should feel like the stat is “overflowing” beyond its container.
+* The effect should remain elegant, not chaotic or overly bright.
+
+This external effect is exclusive to `11/10` and must not appear on `10/10` or lower stats.
+
+## Visual Hierarchy
+
+Use this order:
+
+* `1–9/10` — normal stat appearance.
+* `10/10` — special static gradient.
+* `11/10` — animated gradient, strongest glow, and external aura effects.
+
+## Required Tests
+
+1. Select a species with a `10/10` statistic.
+2. Confirm the stat uses a static gradient instead of one green colour.
+3. Confirm the effect does not move or pulse.
+4. Confirm all `10/10` statistics use the same special style.
+5. Select Super-Buffed Humanity.
+6. Confirm its `11/10 Intelligence` still looks clearly more powerful and unique.
+7. Confirm the animated gradient and glow remain intact.
+8. Confirm the new external aura effects appear only on `11/10` and do not affect readability.
+9. Confirm normal Humanity’s `10/10 Intelligence` uses only the static-gradient effect.
